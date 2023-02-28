@@ -8,3 +8,11 @@ SIZE_LEVEL_25 = 25
 SIZE_DAILY = 30
 SIZE_WEEKLY = 30
 SIZE_MONTHLY = 40
+
+# Difficulty
+DIFF_EASY = 'easy'
+DIFF_NORMAL = 'normal'
+DIFF_HARD = 'hard'
+DIFF_DAILY = 'daily'
+DIFF_WEEKLY = 'weekly'
+DIFF_MONTHLY = 'monthly'

@@ -1,8 +1,11 @@
-from Model import Cell, Board, Environment
+from Model import Board, Environment
+from Model.Cell import Cell
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import sys
+import numpy as np
+import pickle
 
 # Light-up base url for board gathering
 BASE_URL = 'https://www.puzzle-light-up.com/'
@@ -38,6 +41,12 @@ options.add_argument(f"--profile-directory={Environment.PROFILE_DIRECTORY}")
 # driver = webdriver.Chrome(Environment.CHROME_DRIVER_PATH, chrome_options=options)
 driver = webdriver.Chrome(Environment.CHROME_DRIVER_PATH)
 
+boardInventory = []
+
+def login ():
+    # TODO Login using email and username with selenium
+    ''
+
 def gatherBoard (level, size):
     # URL for web scraping target
     url = '{}{}'.format(BASE_URL, level)
@@ -51,11 +60,8 @@ def gatherBoard (level, size):
     # Get every board cell information
     board = getCellsFromBoard(tiles, size)
 
-    # Debugging purposes
-    printBoard(board)
-
-    # Try writing the board to txt files
-    writeBoard(size, board)
+    # Add board to inventory for writing pickle purposes
+    addBoardToInventory(board)
 
 
 def getCellsFromBoard (tiles, colSize):
@@ -90,9 +96,9 @@ def getCellsFromBoard (tiles, colSize):
 
         # Move to the next row on the board
         if i == colSize:
-            i = 0
             board.append(row)
             row = []
+            i = 0
         
         i += 1
 
@@ -109,19 +115,85 @@ def makeEmptyInputFiles ():
     for num in nums:
         open (f"Dataset/{num}.txt", 'w').close()
 
-def writeBoard (size, board):
-    # Input file name format
-    filename = f"Dataset/{size}.txt"
+def addBoardToInventory(board):
+    boardInventory.append(board)
 
-    # Appending the file
-    originalSTD = sys.stdout
-    with open (filename, 'a') as f:
-        sys.stdout = f
-        printBoard(board)
-        sys.stdout = originalSTD
+def writeInventory (size, difficulty):
+    filename = f"Dataset2/{size}_{difficulty}.pkl"
+    pickle.dump(boardInventory, open(filename, 'wb'))
+    boardInventory.clear()
+    # # Input file name format
+    # filename = f"Dataset/{size}.txt"
+
+    # # Appending the file
+    # originalSTD = sys.stdout
+    # with open (filename, 'a') as f:
+    #     sys.stdout = f
+    #     printBoard(board)
+    #     sys.stdout = originalSTD
+
+    # # filename = f"Dataset/{size}.akari"
+
+    # # Save board object using pickle
+    # # pickle.dump(board, open(filename, 'w'))
+
+    # # a = pickle.load(open(filename, 'r'))
 
 # Main
 if __name__ == "__main__":
-    makeEmptyInputFiles()
-    for i in range (5):
-        gatherBoard(LEVEL_10_EASY, Board.SIZE_LEVEL_10)
+    levels7 = [LEVEL_7_EASY, LEVEL_7_NORMAL, LEVEL_7_HARD]
+    levels10 = [LEVEL_10_EASY, LEVEL_10_NORMAL, LEVEL_10_HARD]
+    levels14 = [LEVEL_14_EASY, LEVEL_14_NORMAL, LEVEL_14_HARD]
+    levels25 = [LEVEL_25_EASY, LEVEL_25_NORMAL, LEVEL_25_HARD]
+    sizes = [Board.SIZE_LEVEL_7, Board.SIZE_LEVEL_10, Board.SIZE_LEVEL_14, Board.SIZE_LEVEL_25]
+    difficulties = [Board.DIFF_EASY, Board.DIFF_NORMAL, Board.DIFF_HARD]
+
+
+    size = sizes[0]
+    for i, level in enumerate(levels7):
+        difficulty = difficulties[i]
+        for j in range (100):
+            gatherBoard(level, size)
+        writeInventory(size, difficulty)
+        print(f"PAPAN {size}-{difficulty} SELESAI!")
+    
+    # size = sizes[1]
+    # for i, level in enumerate(levels10):
+    #     difficulty = difficulties[i]
+    #     for j in range (100):
+    #         gatherBoard(level, size)
+    #     writeInventory(size, difficulty)
+    #     print(f"PAPAN {size}-{difficulty} SELESAI!")
+    
+    # size = sizes[2]
+    # for i, level in enumerate(levels14):
+    #     difficulty = difficulties[i]
+    #     for j in range (100):
+    #         gatherBoard(level, size)
+    #     writeInventory(size, difficulty)
+    #     print(f"PAPAN {size}-{difficulty} SELESAI!")
+    
+    # size = sizes[3]
+    # for i, level in enumerate(levels25):
+    #     difficulty = difficulties[i]
+    #     for j in range (100):
+    #         gatherBoard(level, size)
+    #     writeInventory(size, difficulty)
+    #     print(f"PAPAN {size}-{difficulty} SELESAI!")
+
+        
+    
+    # level = LEVEL_7_EASY
+    # size = Board.SIZE_LEVEL_7
+    # difficulty = Board.DIFF_EASY
+
+    # for i in range (100):
+    #     gatherBoard(level, size)
+
+    # writeInventory(size, difficulty)
+
+    # inventory = pickle.load(open('Dataset2/7_easy.pkl', 'rb'))
+    # for inv in inventory:
+    #     print (inv)
+    
+    
