@@ -3,8 +3,6 @@ from Model.Cell import Cell
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-import sys
-import numpy as np
 import pickle
 
 # Light-up base url for board gathering
